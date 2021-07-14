@@ -1,22 +1,11 @@
-name: JD_Sign_Action
+name: Github JD-sign bot
 
 on:
-  repository_dispatch:
-  release:
-    types: published
-  # push:
-  #   branches:
-  #     - master
-  schedule:
-    - cron: 0 20 * * *
-  watch:
-    types: started
-    
-env:
-  JD_COOKIE: ${{ secrets.JD_COOKIE }}
-  PUSH_KEY: ${{ secrets.PUSH_KEY }}
-  UPLOAD_BESULT_DIR: true
-
+    push:
+        branches:
+            - master
+    schedule:
+        - cron: '5 16 * * *'
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -24,21 +13,13 @@ jobs:
         steps:
             - name: Checkout codes
               uses: actions/checkout@v2
-              
             - name: Use Node.js
               uses: actions/setup-node@v1
               with:
                 node-version: '12.x'
-                
-            - name: Run install
+            - name: Run app
               run: npm install
-              
-            - name: Run Script
-              run: node jd_sign.js
-                
-            - name: Upload result file
-              uses: actions/upload-artifact@master
-              if: env.UPLOAD_BESULT_DIR == 'true'
-              with:
-                name: result
-                path: ./*.txt
+            - run: node app.js
+              env:
+                JD_COOKIE: ${{ secrets.JD_COOKIE }}
+                PUSH_KEY: ${{ secrets.PUSH_KEY }}
